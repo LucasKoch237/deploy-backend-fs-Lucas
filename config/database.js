@@ -1,20 +1,17 @@
 import mongoose from "mongoose";
 
+let isConnected = false;
+
 const connectDB = async () => {
-    try {
-        const uri = process.env.MONGO_URI;
+    if (isConnected) return;
 
-        if (!uri) {
-            throw new Error("MONGO_URI no está definida");
-        }
+    const uri = process.env.MONGO_URI;
+    if (!uri) throw new Error("MONGO_URI no definida");
 
-        const conn = await mongoose.connect(uri);
+    const conn = await mongoose.connect(uri);
+    isConnected = true;
 
-        console.log(`MongoDB conectado: ${conn.connection.host}`);
-    } catch (error) {
-        console.error("Error al conectar con MongoDB:", error.message);
-        process.exit(1);
-    }
+    console.log("MongoDB conectado:", conn.connection.host);
 };
 
 export default connectDB;
