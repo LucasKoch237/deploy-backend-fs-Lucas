@@ -1,17 +1,20 @@
 import mongoose from "mongoose";
 
-let isConnected = false;
+let cached = global.mongoose;
+
+if (!cached) {
+    cached = global.mongoose = { conn: null, promise: null };
+}
 
 const connectDB = async () => {
-    if (isConnected) return;
+    if (cached.conn) return cached.conn;
 
-    const uri = process.env.MONGO_URI;
-    if (!uri) throw new Error("MONGO_URI no definida");
+    if (!cached.promise) {
+        cached.promise = mongoose.connect(process.env.MONGO_URI).then((mongoose) => mongoose);
+    }
 
-    const conn = await mongoose.connect(uri);
-    isConnected = true;
-
-    console.log("MongoDB conectado:", conn.connection.host);
+    cached.conn = await cached.promise;
+    return cached.conn;
 };
 
 export default connectDB;

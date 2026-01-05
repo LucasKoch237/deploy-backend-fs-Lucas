@@ -7,20 +7,21 @@ import authRoutes from "../routes/auth.js";
 import productRoutes from "../routes/products.js";
 import orderRoutes from "../routes/orders.js";
 
-
-await connectDB();
-
 const app = express();
 
-app.use(
-    cors({
-        origin: process.env.FRONTEND_URL || "*",
-        credentials: true,
-    })
-);
-
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 🔑 Middleware de conexión a Mongo (CLAVE)
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
