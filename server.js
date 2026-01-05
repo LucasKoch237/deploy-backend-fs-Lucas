@@ -7,8 +7,8 @@ import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/products.js";
 import orderRoutes from "./routes/orders.js";
 
-connectDB();
 
+connectDB();
 const app = express();
 
 app.use(
@@ -21,12 +21,14 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 if (process.env.NODE_ENV === "development") {
     app.use((req, res, next) => {
         console.log(`${req.method} ${req.path}`);
         next();
     });
 }
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
@@ -40,12 +42,14 @@ app.get("/api/health", (req, res) => {
     });
 });
 
+
 app.use((req, res) => {
     res.status(404).json({
         success: false,
         message: "Ruta no encontrada",
     });
 });
+
 
 app.use((err, req, res, next) => {
     console.error("Error:", err);
@@ -56,9 +60,4 @@ app.use((err, req, res, next) => {
     });
 });
 
-const PORT = process.env.PORT || 3001;
-
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-    console.log(`📡 Ambiente: ${process.env.NODE_ENV || "development"}`);
-});
+export default app;
